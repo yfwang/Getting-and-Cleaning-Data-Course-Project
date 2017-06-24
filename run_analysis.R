@@ -33,7 +33,7 @@ subject_train <- read.table("./UCI HAR Dataset/train/subject_train.txt")
 names(X_train) <- features
 train_data <- cbind(subject_train,y_train,X_train)
 
-# bind data
+# bind test and train data
 data <- rbind(test_data,train_data)
 
 ##2.Extracts only the measurements on the mean and standard deviation for each measurement.
@@ -51,7 +51,26 @@ data[,2] <- activity_labels[data[,2]]
 ## =================================================================
 id_labels   <-  c("subject", "activity")
 names(data)[1:2] <- id_labels
+
+
+# remove special characters
+feature_descriptive <- gsub("[\\(\\)-]", "", features)
+feature_descriptive <- feature_descriptive[extract_features]
+
+# expand abbreviations and clean up names
+feature_descriptive <- gsub("^f", "frequencyDomain", feature_descriptive)
+feature_descriptive <- gsub("^t", "timeDomain", feature_descriptive)
+feature_descriptive <- gsub("Acc", "Accelerometer", feature_descriptive)
+feature_descriptive <- gsub("Gyro", "Gyroscope", feature_descriptive)
+feature_descriptive <- gsub("Mag", "Magnitude", feature_descriptive)
+feature_descriptive <- gsub("Freq", "Frequency", feature_descriptive)
+feature_descriptive <- gsub("mean", "Mean", feature_descriptive)
+feature_descriptive <- gsub("std", "StandardDeviation", feature_descriptive)
+feature_descriptive <- gsub("BodyBody", "Body", feature_descriptive)
+
+names(data)[3:81] <- feature_descriptive
 data_labels <- setdiff(colnames(data), id_labels)
+
 
 ##5.From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 ## =================================================================
